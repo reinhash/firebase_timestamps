@@ -20,8 +20,10 @@ document.addEventListener("DOMContentLoaded", event => {
     
     firebase.auth().onAuthStateChanged(user => {
         if(user){
+            console.log(user.photoURL)
             document.getElementById('googleLogin').style.display = "none";
             document.getElementById('logout').style.display = "block";
+            document.getElementById('profilePic').src = user.photoURL;
             //show current timestamps here
            
             let userData = db.ref(`users/${user.uid}/Timestamps`)
