@@ -20,10 +20,13 @@ document.addEventListener("DOMContentLoaded", event => {
     
     firebase.auth().onAuthStateChanged(user => {
         if(user){
-            console.log(user.photoURL)
             document.getElementById('googleLogin').style.display = "none";
+            document.getElementById('googleLogin2').style.display = "none";
             document.getElementById('logout').style.display = "block";
+            document.getElementById('mainContents').style.display = "block";
+            document.getElementById('profilePic').style.display = "block";
             document.getElementById('profilePic').src = user.photoURL;
+            document.getElementById('startButton').style.display = "block";
             //show current timestamps here
            
             let userData = db.ref(`users/${user.uid}/Timestamps`)
@@ -37,11 +40,21 @@ document.addEventListener("DOMContentLoaded", event => {
         }
         else {
             document.getElementById('googleLogin').style.display = "block";
+            document.getElementById('googleLogin2').style.display = "block";
             document.getElementById('logout').style.display = "none";
             //show nothing
         }
     })
 });
+
+let getDateTime = () => {
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
+    return dateTime.toString()
+}
+
 
 let googleLogin = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -62,8 +75,10 @@ let checkIn = () => {
     const db = firebase.database();
     let user = firebase.auth().currentUser;
     if(user){
+        
         let userDataList = db.ref(`users/${user.uid}/Timestamps`)
-        let posting = userDataList.push({"check-in": (new Date()).toString()})
+        let posting = userDataList.push({"check-in": getDateTime()})
+        console.log("posting")
         
         
         // const db = firebase.firestore();
@@ -82,7 +97,7 @@ let checkOut = () => {
     if(user){
         let userDataList = db.ref(`users/${user.uid}/Timestamps/${event.target.id}`)
         let updates = {}
-        updates[`users/${user.uid}/Timestamps/${event.target.id}/check-out`] = (new Date()).toString()
+        updates[`users/${user.uid}/Timestamps/${event.target.id}/check-out`] = getDateTime()
         
         db.ref().update(updates)
         
