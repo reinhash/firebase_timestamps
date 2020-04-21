@@ -49,9 +49,19 @@ document.addEventListener("DOMContentLoaded", event => {
 
 let getDateTime = () => {
     var today = new Date();
-    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var dateTime = date+' '+time;
+
+    var year = today.getFullYear();
+    var month = ((today.getMonth()+1) < 10) ? ('0'+(today.getMonth()+1)) : (today.getMonth()+1);
+    var day = ((today.getDate()) < 10) ? ('0'+(today.getDate())) : (today.getDate());
+    var hour = ((today.getHours()) < 10) ? ('0'+(today.getHours())) : (today.getHours());
+    var minute = ((today.getMinutes()) < 10) ? ('0'+(today.getMinutes())) : (today.getMinutes());
+    var second = ((today.getSeconds()) < 10) ? ('0'+(today.getSeconds())) : (today.getSeconds());
+
+    // var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    // var dateTime = date+' '+time;
+    var dateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`
+
     return dateTime.toString()
 }
 
