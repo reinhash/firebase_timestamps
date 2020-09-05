@@ -20,15 +20,9 @@ document.addEventListener("DOMContentLoaded", event => {
     
     firebase.auth().onAuthStateChanged(user => {
         if(user){
-            document.getElementById('googleLogin').style.display = "none";
-            document.getElementById('googleLogin2').style.display = "none";
-            document.getElementById('logout').style.display = "block";
+            
+            document.getElementById("login-button").style.display = "none";
             document.getElementById('mainContents').style.display = "block";
-            document.getElementById('profilePic').style.display = "block";
-            document.getElementById('profilePic').src = user.photoURL;
-            document.getElementById('startButton').style.display = "block";
-            //show current timestamps here
-           
             let userData = db.ref(`users/${user.uid}/Timestamps`)
             userData.on('value', (snapshot) => {
                 getTimestampList(snapshot.val());
@@ -39,13 +33,23 @@ document.addEventListener("DOMContentLoaded", event => {
             // userTimestamps.onSnapshot(snapshot => getTimestampList(snapshot.data()))
         }
         else {
-            document.getElementById('googleLogin').style.display = "block";
-            document.getElementById('googleLogin2').style.display = "block";
-            document.getElementById('logout').style.display = "none";
+            document.getElementById("logout-button").style.display = "none";
+            // document.getElementById('googleLogin').style.display = "block";
+            // document.getElementById('googleLogin2').style.display = "block";
+            // document.getElementById('logout').style.display = "none";
             //show nothing
         }
     })
 });
+
+let getDb = () => {
+    return firebase.database();
+}
+
+let getUser = () => {
+    return firebase.auth().currentUser;
+
+}
 
 let getDateTime = () => {
     var today = new Date();
@@ -71,7 +75,7 @@ let googleLogin = () => {
     firebase.auth().signInWithPopup(provider)
         .then((result) => {
             const user = result.user;
-            console.log(user)
+            window.location.reload();
         })
         .catch(err => console.log(err))
 }
@@ -82,13 +86,12 @@ let logout = () => {
 }
 
 let checkIn = () => {
-    const db = firebase.database();
-    let user = firebase.auth().currentUser;
+    const db = getDb()
+    let user = getUser()
     if(user){
         
         let userDataList = db.ref(`users/${user.uid}/Timestamps`)
         let posting = userDataList.push({"check-in": getDateTime()})
-        console.log("posting")
         
         
         // const db = firebase.firestore();
@@ -102,12 +105,94 @@ let checkIn = () => {
 }
 
 let checkOut = () => {
-    const db = firebase.database();
-    let user = firebase.auth().currentUser;
+    const db = getDb()
+    let user = getUser()
     if(user){
         let userDataList = db.ref(`users/${user.uid}/Timestamps/${event.target.id}`)
         let updates = {}
         updates[`users/${user.uid}/Timestamps/${event.target.id}/check-out`] = getDateTime()
+        
+        db.ref().update(updates)
+        
+    }
+}
+
+
+let edit = () => {
+    const db = getDb()
+    let user = getUser()
+    let row_id = event.target.id.slice(5)
+    if(user){
+        let userDataList = db.ref(`users/${user.uid}/Timestamps/${row_id}`)
+        // let updates = {}
+        // console.log(userDataList)
+        // console.log(row_id)
+        // updates[`users/${user.uid}/Timestamps/${row_id}/check-out`] = getDateTime()
+        
+        // db.ref().update(updates)
+
+        // change relevant row to input
+        let relevant_row = document.getElementById(`row-${row_id}`)
+        
+        userDataList.on('value', (snapshot) => {
+            editTimestampList(relevant_row, row_id, snapshot.val())
+        })
+        // 
+    }
+}
+
+let submitEdit = () => {
+    let row_id = event.target.id.slice(7);
+    let relevant_row = document.getElementById(`row-${row_id}`);
+    let inputs = relevant_row.getElementsByTagName('input')
+    let checkInValue;
+    let checkOutValue;
+    if(inputs.length > 0){
+        checkInValue = inputs[0]['value']
+        if(inputs.length > 1){
+            checkOutValue = inputs[1]['value']
+        }
+    }
+    
+    let user = getUser();
+    let db = getDb();
+
+    if(user){
+        let updates = {}
+        if(checkInValue){
+            updates[`users/${user.uid}/Timestamps/${row_id}/check-in`] = checkInValue
+        }
+        if(checkOutValue){
+            updates[`users/${user.uid}/Timestamps/${row_id}/check-out`] = checkOutValue
+        }
+        
+        db.ref().update(updates)
+        
+    }
+}
+
+let resetEdit = () => {
+    const db = getDb()
+    let user = getUser()
+    let row_id = event.target.id.slice(6)
+    let relevant_row = document.getElementById(`row-${row_id}`)
+    let userDataList = db.ref(`users/${user.uid}/Timestamps/${row_id}`)
+    userDataList.on('value', (snapshot) => {    
+        setDefaultTableItem(relevant_row, row_id, snapshot.val())
+    })
+    
+}
+
+let deleteEntry = () => {
+    let row_id = event.target.id.slice(7);
+    let relevant_row = document.getElementById(`row-${row_id}`);
+    let user = getUser();
+    let db = getDb();
+
+    if(user){
+        let updates = {}
+        updates[`users/${user.uid}/Timestamps/${row_id}/check-in`] = null
+        updates[`users/${user.uid}/Timestamps/${row_id}/check-out`] = null
         
         db.ref().update(updates)
         
