@@ -22,7 +22,7 @@
 
   
 
-  <body>
+  <body style="min-height: 100%;">
     <section id="mainSection" class="uk-section uk-section-muted">
       <div>
         <header>
@@ -33,7 +33,11 @@
     </section>
     <section class="uk-section uk-section-muted uk-text-center">
       <div>
-        <button id="login-button" class="uk-button uk-button-default" onclick="googleLogin()">login</button>
+        <button id="login-button" class="uk-button uk-button-default" onclick="googleLogin()">
+          <span class="uk-margin-small-right uk-icon">
+            <img src="/images/auth_service_google.svg" /> Login
+          </span>
+        </button>
         <button id="logout-button" class="uk-button uk-button-secondary" onclick="logout()">logout</button>
       </div>
     </section>
@@ -60,7 +64,7 @@
         </div>
       </div>
     </section>
-    <section class="uk-section uk-section-muted uk-text-center">
+    <section class="uk-section uk-section-muted uk-text-center" id="goToStart">
       <a href="#mainSection" uk-totop></a>
     </section>
    

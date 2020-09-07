@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", event => {
         }
         else {
             document.getElementById("logout-button").style.display = "none";
+            document.getElementById("goToStart").style.display = "none";
             // document.getElementById('googleLogin').style.display = "block";
             // document.getElementById('googleLogin2').style.display = "block";
             // document.getElementById('logout').style.display = "none";
