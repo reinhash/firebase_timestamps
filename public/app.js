@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", event => {
         else {
             document.getElementById("logout-button").style.display = "none";
             document.getElementById("goToStart").style.display = "none";
+            document.getElementById("export-button").style.display = "none";
             // document.getElementById('googleLogin').style.display = "block";
             // document.getElementById('googleLogin2').style.display = "block";
             // document.getElementById('logout').style.display = "none";
@@ -198,4 +199,26 @@ let deleteEntry = () => {
         db.ref().update(updates)
         
     }
+}
+
+let provideExport = () => {
+    const db = getDb()
+    let user = getUser()
+    let userData = db.ref(`users/${user.uid}/Timestamps/`)
+    userData.on('value', (snapshot) => {
+        let csvContent = "data:text/csv;charset=utf-8," + "id,check-in,check-out\n"
+            //+ snapshot.val().map(item => {return item})   //.map(e => e.join(",")).join("\n");
+            + Object.entries(snapshot.val()).map(item => [item[0], item[1]["check-in"], item[1]["check-out"]].join(",")).join("\n")
+        // var encodedUri = encodeURI(csvContent);
+        // window.open(encodedUri);
+
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `my_timestamps_${getDateTime()}.csv`);
+        document.body.appendChild(link); // Required for FF
+
+        link.click(); // This will download the data file named "my_data.csv".
+    })
 }
