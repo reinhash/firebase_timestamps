@@ -205,7 +205,7 @@ let provideExport = () => {
     const db = getDb()
     let user = getUser()
     let userData = db.ref(`users/${user.uid}/Timestamps/`)
-    userData.on('value', (snapshot) => {
+    userData.once('value', (snapshot) => {
         let csvContent = "data:text/csv;charset=utf-8," + "id,check-in,check-out\n"
             //+ snapshot.val().map(item => {return item})   //.map(e => e.join(",")).join("\n");
             + Object.entries(snapshot.val()).map(item => [item[0], item[1]["check-in"], item[1]["check-out"]].join(",")).join("\n")
